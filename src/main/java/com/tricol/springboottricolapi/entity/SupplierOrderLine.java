@@ -40,11 +40,11 @@ public class SupplierOrderLine {
     @Column(name = "unit_purchase_price", nullable = false, precision = 12, scale = 3)
     private BigDecimal unitPurchasePrice;
 
-    // This is a generated column in the database (line_total = quantity * unit_purchase_price)
+
     @Column(name = "line_total", precision = 14, scale = 2, insertable = false, updatable = false)
     private BigDecimal lineTotal;
 
-    // Helper method for business logic
+
     public BigDecimal getLineTotal() {
         if (lineTotal != null) {
             return lineTotal;

@@ -13,7 +13,9 @@ import jakarta.transaction.Transactional;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.List;
+import java.util.function.Predicate;
 
 @Service
 @Transactional
@@ -37,6 +39,7 @@ public class ProductService {
     public ProductResponseDTO getProductById(Long id) {
         Product product = productRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Product not found with id: " + id));
+
         return productMapper.toResponseDTO(product);
     }
 
@@ -44,7 +47,6 @@ public class ProductService {
         if (productRepository.existsByReference(requestDTO.getReference())) {
             throw new DuplicateRessourceException("Product", "reference", requestDTO.getReference());
         }
-
         Product product = productMapper.toEntity(requestDTO);
         Product savedProduct = productRepository.save(product);
         return productMapper.toResponseDTO(savedProduct);
@@ -81,6 +83,7 @@ public class ProductService {
         Product product = productRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Product not found with id: " + id));
 
+
         return ProductStockDTO.builder()
                 .productId(product.getId())
                 .reference(product.getReference())
@@ -91,4 +94,12 @@ public class ProductService {
                 .isBelowReorderPoint(product.isBelowReorderPoint())
                 .build();
     }
+
+
+
+
+
+
 }
+
+

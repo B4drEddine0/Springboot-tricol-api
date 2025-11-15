@@ -10,4 +10,6 @@ public class SpringbootTricolApiApplication {
 		SpringApplication.run(SpringbootTricolApiApplication.class, args);
 	}
 
+
+
 }

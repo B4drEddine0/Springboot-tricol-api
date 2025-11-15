@@ -74,7 +74,7 @@ public class SupplierOrder {
     @JsonIgnore
     private List<StockBatch> stockBatches = new ArrayList<>();
 
-    // Business methods
+
     public void calculateTotalAmount() {
         totalAmount = orderLines.stream()
                 .map(SupplierOrderLine::getLineTotal)

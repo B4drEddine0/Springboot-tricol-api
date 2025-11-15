@@ -34,17 +34,13 @@ public class StockService {
     private final StockMovementRepository stockMovementRepository;
     private final ProductRepository productRepository;
 
-    /**
-     * Create stock entry from supplier order reception
-     * Called when order status changes to LIVREE
-     */
+
     public void createStockEntryFromOrder(SupplierOrder order) {
-        log.info("Creating stock entries from order: {}", order.getOrderNumber());
 
         for (SupplierOrderLine orderLine : order.getOrderLines()) {
             String batchNumber = generateBatchNumber(orderLine.getProduct());
 
-            // Create stock batch
+            //stock batch
             StockBatch batch = StockBatch.builder()
                     .batchNumber(batchNumber)
                     .product(orderLine.getProduct())
@@ -57,7 +53,7 @@ public class StockService {
 
             stockBatchRepository.save(batch);
 
-            // Create stock movement (ENTREE)
+            //(ENTREE)
             StockMovement movement = StockMovement.builder()
                     .product(orderLine.getProduct())
                     .batch(batch)
@@ -71,23 +67,18 @@ public class StockService {
 
             stockMovementRepository.save(movement);
 
-            // Update product stock
+
             updateProductStock(orderLine.getProduct());
         }
 
-        log.info("Stock entries created successfully for order: {}", order.getOrderNumber());
     }
 
-    /**
-     * Process stock exit using FIFO method
-     */
-    public void processStockExit(Long productId, BigDecimal quantityNeeded, String reference, String notes) {
-        log.info("Processing FIFO stock exit for product {} - quantity: {}", productId, quantityNeeded);
 
+    public void processStockExit(Long productId, BigDecimal quantityNeeded, String reference, String notes) {
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new ResourceNotFoundException("Product not found with id: " + productId));
 
-        // Check if enough stock
+
         if (product.getCurrentStock().compareTo(quantityNeeded) < 0) {
             throw new InsufficientStockException(
                     product.getName(),
@@ -96,7 +87,6 @@ public class StockService {
             );
         }
 
-        // Get available batches ordered by FIFO
         List<StockBatch> availableBatches = stockBatchRepository
                 .findAvailableBatchesByProductIdOrderedByFifo(productId);
 
@@ -106,17 +96,17 @@ public class StockService {
 
         BigDecimal remainingQuantity = quantityNeeded;
 
-        // Consume batches FIFO
+
         for (StockBatch batch : availableBatches) {
             if (remainingQuantity.compareTo(BigDecimal.ZERO) <= 0) break;
 
             BigDecimal quantityToConsume = remainingQuantity.min(batch.getRemainingQuantity());
 
-            // Update batch
+
             batch.setRemainingQuantity(batch.getRemainingQuantity().subtract(quantityToConsume));
             stockBatchRepository.save(batch);
 
-            // Create stock movement (SORTIE)
+            //(SORTIE)
             StockMovement movement = StockMovement.builder()
                     .product(product)
                     .batch(batch)
@@ -131,19 +121,14 @@ public class StockService {
 
             remainingQuantity = remainingQuantity.subtract(quantityToConsume);
 
-            log.info("Consumed {} units from batch {} (remaining in batch: {})",
-                    quantityToConsume, batch.getBatchNumber(), batch.getRemainingQuantity());
         }
 
         // Update product stock
         updateProductStock(product);
 
-        log.info("Stock exit processed successfully for product: {}", product.getName());
     }
 
-    /**
-     * Get detailed stock for a product with FIFO batches
-     */
+
     @Transactional(readOnly = true)
     public ProductStockDetailDTO getProductStockDetail(Long productId) {
         Product product = productRepository.findById(productId)
@@ -170,9 +155,7 @@ public class StockService {
                 .build();
     }
 
-    /**
-     * Get all stock movements history
-     */
+
     @Transactional(readOnly = true)
     public List<StockMovementResponseDTO> getAllMovements() {
         return stockMovementRepository.findAllByOrderByMovementDateDesc()
@@ -181,9 +164,8 @@ public class StockService {
                 .collect(Collectors.toList());
     }
 
-    /**
-     * Get stock movements for a specific product
-     */
+
+
     @Transactional(readOnly = true)
     public List<StockMovementResponseDTO> getMovementsByProduct(Long productId) {
         // Verify product exists
@@ -196,9 +178,8 @@ public class StockService {
                 .collect(Collectors.toList());
     }
 
-    /**
-     * Get products below reorder point (alerts)
-     */
+
+
     @Transactional(readOnly = true)
     public List<StockAlertDTO> getStockAlerts() {
         List<Product> products = productRepository.findAll();
@@ -215,9 +196,7 @@ public class StockService {
                 .collect(Collectors.toList());
     }
 
-    /**
-     * Calculate total stock valuation (FIFO method)
-     */
+
     @Transactional(readOnly = true)
     public StockValuationDTO getStockValuation() {
         List<StockBatch> allBatches = stockBatchRepository.findAll();
@@ -240,7 +219,7 @@ public class StockService {
                 .build();
     }
 
-    // Helper methods
+
 
     private void updateProductStock(Product product) {
         List<StockBatch> batches = stockBatchRepository
@@ -294,7 +273,6 @@ public class StockService {
 
     @Transactional(readOnly = true)
         public List<ProductStockDTO> getGlobalStockOverview() {
-        log.info("Getting global stock overview");
         return productRepository.findAll()
                 .stream()
                 .map(product -> ProductStockDTO.builder()
@@ -306,6 +284,7 @@ public class StockService {
                         .unitOfMeasure(product.getUnitOfMeasure())
                         .isBelowReorderPoint(product.isBelowReorderPoint())
                         .build())
+
                 .collect(Collectors.toList());
         }
 }

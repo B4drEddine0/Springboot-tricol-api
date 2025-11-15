@@ -3,6 +3,7 @@ package com.tricol.springboottricolapi.repository;
 import com.tricol.springboottricolapi.entity.DeliveryNote;
 import com.tricol.springboottricolapi.entity.enums.ExitOrderStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -15,4 +16,5 @@ public interface DeliveryNoteRepository extends JpaRepository<DeliveryNote, Long
     List<DeliveryNote> findByStatus(ExitOrderStatus status);
 
     boolean existsByNoteNumber(String noteNumber);
+
 }

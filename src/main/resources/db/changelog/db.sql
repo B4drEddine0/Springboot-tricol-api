@@ -115,6 +115,8 @@ CREATE TABLE delivery_notes (
 );
 
 
+
+
 -- changeset tricol:9
 CREATE TABLE delivery_note_lines (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
@@ -170,3 +172,10 @@ ALTER TABLE stock_movements ADD COLUMN IF NOT EXISTS unit_price DECIMAL(12,3);
 -- Fix: Update stock_movements movement_type constraint to match Java enum (ENTREE/SORTIE)
 ALTER TABLE stock_movements DROP CONSTRAINT IF EXISTS chk_movement_type;
 ALTER TABLE stock_movements ADD CONSTRAINT chk_movement_type CHECK (movement_type IN ('ENTREE','SORTIE'));
+
+
+--changeset tricol:16
+ALTER TABLE delivery_notes ADD COLUMN cout_total  DECIMAL(14,2) NULL DEFAULT 0;
+
+--changeset tricol:17
+ALTER TABLE delivery_notes DROP COLUMN cout_total;

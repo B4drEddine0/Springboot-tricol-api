@@ -62,6 +62,8 @@ public class DeliveryNote {
     @JsonIgnore
     private List<DeliveryNoteLine> deliveryNoteLines = new ArrayList<>();
 
+
+
     // Helper methods
     public void addDeliveryNoteLine(DeliveryNoteLine line) {
         deliveryNoteLines.add(line);
