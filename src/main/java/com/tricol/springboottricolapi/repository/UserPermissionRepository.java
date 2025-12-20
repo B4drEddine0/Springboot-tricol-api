@@ -1,5 +1,6 @@
 package com.tricol.springboottricolapi.repository;
 
+import com.tricol.springboottricolapi.entity.Permission;
 import com.tricol.springboottricolapi.entity.UserApp;
 import com.tricol.springboottricolapi.entity.UserPermission;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -12,4 +13,5 @@ import java.util.Optional;
 public interface UserPermissionRepository extends JpaRepository<UserPermission, Long> {
     List<UserPermission> findByUser(UserApp user);
     Optional<UserPermission> findByUserAndPermissionName(UserApp user, String permissionName);
+    Optional<UserPermission> findByUserAndPermission(UserApp user, Permission permission);
 }
