@@ -18,6 +18,7 @@ public class UserDetailsImpl implements UserDetails {
     private String username;
     private String email;
     private String password;
+    private boolean enabled;
     private Collection<? extends GrantedAuthority> authorities;
 
     public static UserDetailsImpl build(UserApp user, Collection<String> permissions) {
@@ -30,6 +31,7 @@ public class UserDetailsImpl implements UserDetails {
                 user.getUsername(),
                 user.getEmail(),
                 user.getPassword(),
+                user.getEnabled(),
                 authorities
         );
     }
@@ -51,6 +53,6 @@ public class UserDetailsImpl implements UserDetails {
 
     @Override
     public boolean isEnabled() {
-        return true;
+        return enabled;
     }
 }
