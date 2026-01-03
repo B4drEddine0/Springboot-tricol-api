@@ -21,7 +21,11 @@ public class RefreshTokenService {
 
     private final RefreshTokenRepository refreshTokenRepository;
 
+    @Transactional
     public RefreshToken createRefreshToken(UserApp user) {
+        refreshTokenRepository.deleteByUser(user);
+        refreshTokenRepository.flush();
+        
         RefreshToken refreshToken = RefreshToken.builder()
                 .user(user)
                 .token(UUID.randomUUID().toString())
@@ -31,6 +35,7 @@ public class RefreshTokenService {
 
         return refreshTokenRepository.save(refreshToken);
     }
+
 
     public RefreshToken verifyExpiration(RefreshToken token) {
         if (token.getExpiryDate().compareTo(Instant.now()) < 0 || token.getRevoked()) {

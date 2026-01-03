@@ -7,9 +7,11 @@ import com.tricol.springboottricolapi.entity.RefreshToken;
 import com.tricol.springboottricolapi.entity.UserApp;
 import com.tricol.springboottricolapi.exception.DuplicateRessourceException;
 import com.tricol.springboottricolapi.repository.UserAppRepository;
+import com.tricol.springboottricolapi.security.CustomUserDetailsService;
 import com.tricol.springboottricolapi.security.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -26,6 +28,7 @@ public class AuthService {
     private final JwtTokenProvider tokenProvider;
     private final RefreshTokenService refreshTokenService;
     private final AuditService auditService;
+    private final CustomUserDetailsService userDetailsService;
 
     @Transactional
     public AuthResponse login(LoginRequest request) {
@@ -73,8 +76,11 @@ public class AuthService {
         refreshTokenService.verifyExpiration(refreshToken);
 
         UserApp user = refreshToken.getUser();
+        
+        UserDetails userDetails = userDetailsService.loadUserByUsername(user.getUsername());
+        
         Authentication authentication = new UsernamePasswordAuthenticationToken(
-                user.getUsername(), null, null
+                userDetails, null, userDetails.getAuthorities()
         );
 
         String newAccessToken = tokenProvider.generateToken(authentication);
@@ -86,6 +92,7 @@ public class AuthService {
                 .expiresIn(tokenProvider.getExpirationMs() / 1000)
                 .build();
     }
+
 
     @Transactional
     public void logout(String username) {
