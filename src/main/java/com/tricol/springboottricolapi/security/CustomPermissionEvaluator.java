@@ -53,6 +53,7 @@ public class CustomPermissionEvaluator {
     }
 
 
+
     private boolean hasKeycloakPermission(JwtAuthenticationToken jwtAuth, String permission) {
     Collection<? extends GrantedAuthority> authorities = jwtAuth.getAuthorities();
     log.info("Keycloak authorities: {}", authorities);
