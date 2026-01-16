@@ -64,7 +64,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 try {
                     jwtDecoder = applicationContext.getBean(JwtDecoder.class);
                 } catch (Exception e) {
-                    // JwtDecoder not available
+                    //
                 }
             }
             
