@@ -78,7 +78,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                     JwtAuthenticationToken authentication = new JwtAuthenticationToken(decodedJwt, authorities);
                     SecurityContextHolder.getContext().setAuthentication(authentication);
                     filterChain.doFilter(request, response);
-                    return;
+                        return;
                 } catch (Exception ex) {
                     logger.debug("Not a Keycloak JWT: " + ex.getMessage());
                 }

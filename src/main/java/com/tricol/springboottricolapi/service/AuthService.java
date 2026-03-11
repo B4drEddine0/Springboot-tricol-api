@@ -42,11 +42,16 @@ public class AuthService implements IAuthService {
 
         auditService.logAction(user, "LOGIN", "AUTH", null, "User logged in");
 
+        String role = user.getRoles().isEmpty() ? null : user.getRoles().iterator().next().name();
+
         return AuthResponse.builder()
                 .accessToken(accessToken)
                 .refreshToken(refreshToken.getToken())
                 .tokenType("Bearer")
                 .expiresIn(tokenProvider.getExpirationMs() / 1000)
+                .username(user.getUsername())
+                .email(user.getEmail())
+                .role(role)
                 .build();
     }
 
@@ -85,11 +90,16 @@ public class AuthService implements IAuthService {
 
         String newAccessToken = tokenProvider.generateToken(authentication);
 
+        String role = user.getRoles().isEmpty() ? null : user.getRoles().iterator().next().name();
+
         return AuthResponse.builder()
                 .accessToken(newAccessToken)
                 .refreshToken(refreshToken.getToken())
                 .tokenType("Bearer")
                 .expiresIn(tokenProvider.getExpirationMs() / 1000)
+                .username(user.getUsername())
+                .email(user.getEmail())
+                .role(role)
                 .build();
     }
 
